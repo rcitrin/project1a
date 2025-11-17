@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boston Pro Sports Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --team-bg: #1f2937; /* Default background */
+            --team-text: #f3f4f6; /* Default text */
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.5s ease;
+            background-color: var(--team-bg);
+            color: var(--team-text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+        .card {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        .header-bg {
+            background-color: rgba(0, 0, 0, 0.15);
+        }
+        /* Custom Tailwind configuration for dynamic colors */
+        .select-team {
+            border-color: var(--team-text) !important;
+            color: var(--team-bg) !important;
+            background-color: var(--team-text) !important;
+        }
+    </style>
+</head>
+<body id="body">
+
+    <div id="app-container" class="w-full max-w-4xl p-6 md:p-10 card rounded-xl transition-all duration-500">
+        <h1 class="text-4xl md:text-5xl font-extrabold mb-6 text-center">Boston Sports Hub</h1>
+
+        <!-- Team Selector Dropdown -->
+        <div class="mb-8 flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+            <label for="team-selector" class="text-xl font-semibold whitespace-nowrap">Select a Team:</label>
+            <select id="team-selector" class="select-team p-3 rounded-lg font-bold w-full sm:w-64 cursor-pointer text-lg focus:ring-4 focus:ring-opacity-50">
+                <option value="none" disabled selected>-- Choose Team --</option>
+                <option value="celtics">Boston Celtics (NBA)</option>
+                <option value="bruins">Boston Bruins (NHL)</option>
+                <option value="redsox">Boston Red Sox (MLB)</option>
+                <option value="patriots">New England Patriots (NFL)</option>
+            </select>
+        </div>
+
+        <!-- Team Content Area -->
+        <div id="team-content" class="text-center transition-opacity duration-500 opacity-0 min-h-[300px] flex items-center justify-center">
+            <p class="text-xl font-medium italic">Select a team above to view its details.</p>
+        </div>
+    </div>
+
+    <script>
+        const TEAMS_DATA = {
+            'celtics': {
+                name: 'Boston Celtics',
+                league: 'NBA',
+                colors: { primary: '#007A33', secondary: '#FFFFFF', text: '#FFFFFF', bgClass: 'bg-green-700', ringClass: 'focus:ring-green-300' },
+                players: ['Jayson Tatum', 'Jaylen Brown', 'Kristaps Porzingis', 'Derrick White'],
+                recent: [
+                    { result: 'W 120-108', opponent: 'vs. Raptors', date: 'Nov 15' },
+                    { result: 'L 110-115', opponent: 'vs. Sixers', date: 'Nov 12' }
+                ],
+                upcoming: [
+                    { opponent: 'vs. Bucks', date: 'Nov 19', time: '7:30 PM EST' },
+                    { opponent: '@ Hornets', date: 'Nov 22', time: '7:00 PM EST' }
+                ]
+            },
+            'bruins': {
+                name: 'Boston Bruins',
+                league: 'NHL',
+                colors: { primary: '#FFB81C', secondary: '#000000', text: '#000000', bgClass: 'bg-yellow-500', ringClass: 'focus:ring-yellow-300' },
+                players: ['David Pastrnak', 'Brad Marchand', 'Charlie McAvoy', 'Linus Ullmark'],
+                recent: [
+                    { result: 'W 4-1', opponent: 'vs. Stars', date: 'Nov 16' },
+                    { result: 'L 2-3 (OT)', opponent: 'vs. Panthers', date: 'Nov 14' }
+                ],
+                upcoming: [
+                    { opponent: '@ Lightning', date: 'Nov 20', time: '7:00 PM EST' },
+                    { opponent: 'vs. Hurricanes', date: 'Nov 23', time: '7:00 PM EST' }
+                ]
+            },
+            'redsox': {
+                name: 'Boston Red Sox',
+                league: 'MLB',
+                colors: { primary: '#C8102E', secondary: '#0C2340', text: '#FFFFFF', bgClass: 'bg-red-700', ringClass: 'focus:ring-red-300' },
+                players: ['Rafael Devers', 'Triston Casas', 'Brayan Bello', 'Masataka Yoshida'],
+                recent: [
+                    { result: 'W 5-2', opponent: 'vs. Orioles', date: 'Oct 1, 2025' },
+                    { result: 'L 3-1', opponent: 'vs. Yankees', date: 'Sep 29, 2025' }
+                ],
+                upcoming: [
+                    { opponent: 'Spring Training begins', date: 'Feb 2026', time: 'Off-Season' },
+                    { opponent: 'Next Regular Season Game', date: 'Late March 2026', time: 'Off-Season' }
+                ]
+            },
+            'patriots': {
+                name: 'New England Patriots',
+                league: 'NFL',
+                colors: { primary: '#002244', secondary: '#C60C30', text: '#FFFFFF', bgClass: 'bg-blue-900', ringClass: 'focus:ring-blue-300' },
+                players: ['Rhamondre Stevenson', 'Matthew Judon', 'Christian Barmore', 'Jahlani Tavai'],
+                recent: [
+                    { result: 'L 6-10', opponent: 'vs. Colts (Germany)', date: 'Nov 10' },
+                    { result: 'W 21-17', opponent: 'vs. Commanders', date: 'Nov 5' }
+                ],
+                upcoming: [
+                    { opponent: '@ Giants', date: 'Nov 24', time: '1:00 PM EST' },
+                    { opponent: 'vs. Chargers', date: 'Dec 1', time: '1:00 PM EST' }
+                ]
+            }
+        };
+
+        const teamSelector = document.getElementById('team-selector');
+        const teamContent = document.getElementById('team-content');
+        const body = document.getElementById('body');
+
+        // Function to render team content
+        function renderTeam(teamKey) {
+            const team = TEAMS_DATA[teamKey];
+            if (!team) return;
+
+            // 1. Update overall theme (body and select box)
+            document.documentElement.style.setProperty('--team-bg', team.colors.primary);
+            document.documentElement.style.setProperty('--team-text', team.colors.text);
+
+            // Apply specific ring class to selector for visual feedback
+            teamSelector.className = `select-team p-3 rounded-lg font-bold w-full sm:w-64 cursor-pointer text-lg focus:ring-4 focus:ring-opacity-50 ${team.colors.ringClass}`;
+
+            // Create HTML content
+            let contentHTML = `
+                <div class="w-full">
+                    <h2 class="text-3xl md:text-4xl font-extrabold mb-6 header-bg py-2 px-4 rounded-lg">${team.name} (${team.league})</h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+
+                        <!-- Star Players Section -->
+                        <div class="p-4 rounded-lg shadow-inner ${team.bgClass} bg-opacity-70">
+                            <h3 class="text-2xl font-bold mb-3 border-b pb-2">Star Players</h3>
+                            <ul class="space-y-2">
+                                ${team.players.map(player => `<li class="text-lg font-medium">${player}</li>`).join('')}
+                            </ul>
+                        </div>
+
+                        <!-- Recent Results Section -->
+                        <div class="p-4 rounded-lg shadow-inner ${team.bgClass} bg-opacity-70">
+                            <h3 class="text-2xl font-bold mb-3 border-b pb-2">Recent Results</h3>
+                            <ul class="space-y-2">
+                                ${team.recent.map(game => `
+                                    <li class="text-lg">
+                                        <span class="font-extrabold ${game.result.startsWith('W') ? 'text-green-300' : 'text-red-300'} mr-2">${game.result}</span>
+                                        ${game.opponent} (${game.date})
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+
+                        <!-- Upcoming Fixtures Section -->
+                        <div class="p-4 rounded-lg shadow-inner ${team.bgClass} bg-opacity-70">
+                            <h3 class="text-2xl font-bold mb-3 border-b pb-2">Upcoming Fixtures</h3>
+                            <ul class="space-y-2">
+                                ${team.upcoming.map(game => `
+                                    <li class="text-lg">
+                                        <span class="font-extrabold mr-2">${game.opponent}</span>
+                                        (${game.date}) - ${game.time}
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Fade out, update content, fade in
+            teamContent.style.opacity = '0';
+            setTimeout(() => {
+                teamContent.innerHTML = contentHTML;
+                teamContent.style.opacity = '1';
+            }, 300);
+        }
+
+        // Event Listener for the dropdown
+        teamSelector.addEventListener('change', (event) => {
+            const selectedTeam = event.target.value;
+            if (selectedTeam !== 'none') {
+                renderTeam(selectedTeam);
+            }
+        });
+
+        // Initial setup for default background colors before selection
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set initial theme to a neutral dark gray
+            document.documentElement.style.setProperty('--team-bg', '#1f2937');
+            document.documentElement.style.setProperty('--team-text', '#f3f4f6');
+            teamSelector.className = `select-team p-3 rounded-lg font-bold w-full sm:w-64 cursor-pointer text-lg focus:ring-4 focus:ring-gray-300 focus:ring-opacity-50`;
+        });
+    </script>
+</body>
+</html>
