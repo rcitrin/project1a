@@ -8,13 +8,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --team-bg: #1f2937; /* Default background */
-            --team-text: #f3f4f6; /* Default text */
+            --team-bg: #1f2937; /* Default background - will be overwritten on team select but is here for default styles */
+            --team-text: #f3f4f6; /* Default text - will be overwritten on team select but is here for default styles */
         }
         body {
             font-family: 'Inter', sans-serif;
             transition: background-color 0.5s ease;
-            background-color: var(--team-bg);
+            /* *** CHANGE MADE HERE *** */
+            background-color: #000000; /* Solid Black Background */
+            /* The original background-color: var(--team-bg); is removed/ignored here */
             color: var(--team-text);
             min-height: 100vh;
             display: flex;
@@ -23,6 +25,7 @@
             padding: 1rem;
         }
         .card {
+            /* This is the box color/style you wanted to keep */
             background-color: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(5px);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -44,7 +47,6 @@
     <div id="app-container" class="w-full max-w-4xl p-6 md:p-10 card rounded-xl transition-all duration-500">
         <h1 class="text-4xl md:text-5xl font-extrabold mb-6 text-center">Boston Sports Hub</h1>
 
-        <!-- Team Selector Dropdown -->
         <div class="mb-8 flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
             <label for="team-selector" class="text-xl font-semibold whitespace-nowrap">Select a Team:</label>
             <select id="team-selector" class="select-team p-3 rounded-lg font-bold w-full sm:w-64 cursor-pointer text-lg focus:ring-4 focus:ring-opacity-50">
@@ -56,7 +58,6 @@
             </select>
         </div>
 
-        <!-- Team Content Area -->
         <div id="team-content" class="text-center transition-opacity duration-500 opacity-0 min-h-[300px] flex items-center justify-center">
             <p class="text-xl font-medium italic">Select a team above to view its details.</p>
         </div>
@@ -132,6 +133,7 @@
             if (!team) return;
 
             // 1. Update overall theme (body and select box)
+            // Note: Body background is now hardcoded black, so only the select box theme is affected here.
             document.documentElement.style.setProperty('--team-bg', team.colors.primary);
             document.documentElement.style.setProperty('--team-text', team.colors.text);
 
@@ -145,7 +147,6 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
 
-                        <!-- Star Players Section -->
                         <div class="p-4 rounded-lg shadow-inner ${team.bgClass} bg-opacity-70">
                             <h3 class="text-2xl font-bold mb-3 border-b pb-2">Star Players</h3>
                             <ul class="space-y-2">
@@ -153,7 +154,6 @@
                             </ul>
                         </div>
 
-                        <!-- Recent Results Section -->
                         <div class="p-4 rounded-lg shadow-inner ${team.bgClass} bg-opacity-70">
                             <h3 class="text-2xl font-bold mb-3 border-b pb-2">Recent Results</h3>
                             <ul class="space-y-2">
@@ -166,7 +166,6 @@
                             </ul>
                         </div>
 
-                        <!-- Upcoming Fixtures Section -->
                         <div class="p-4 rounded-lg shadow-inner ${team.bgClass} bg-opacity-70">
                             <h3 class="text-2xl font-bold mb-3 border-b pb-2">Upcoming Fixtures</h3>
                             <ul class="space-y-2">
@@ -198,9 +197,9 @@
             }
         });
 
-        // Initial setup for default background colors before selection
+        // Initial setup for default colors before selection
         document.addEventListener('DOMContentLoaded', () => {
-            // Set initial theme to a neutral dark gray
+            // Set initial theme for the select box to a neutral dark gray on black background
             document.documentElement.style.setProperty('--team-bg', '#1f2937');
             document.documentElement.style.setProperty('--team-text', '#f3f4f6');
             teamSelector.className = `select-team p-3 rounded-lg font-bold w-full sm:w-64 cursor-pointer text-lg focus:ring-4 focus:ring-gray-300 focus:ring-opacity-50`;
